@@ -1,4 +1,4 @@
-# Bring-up status — 2026-09-22
+# Bring-up status — updated 2026-09-23
 
 ## Hardware and host
 
@@ -10,14 +10,20 @@
 
 ## Endstops
 
-During a 15-second QUERY_ENDSTOPS poll:
+During the initial 15-second QUERY_ENDSTOPS poll on 2026-09-22:
 
 - X changed between open and TRIGGERED.
-- Y remained open throughout. The user confirmed the Y endstop wire is broken and plans to repair it.
+- Y remained open throughout. At the time, the user reported the wire was broken and planned to repair it; that repair is now reported complete (see the 2026-09-23 addendum).
 - Z and the configured z1 input changed between open and TRIGGERED.
 - The z1 input is assigned to PC4 provisionally; its physical identity still needs confirmation.
 
-Do not home Y until its wire is repaired and the switch is verified. Recheck all endstop states after the repair before homing.
+## Addendum — 2026-09-23: repair and logical polarity
+
+The user reports that all mechanical endstops are now repaired and working. In a 30-second poll at 4 queries per second (120 `QUERY_ENDSTOPS` requests), Y changed between `open` and `TRIGGERED` as it was actuated. X, Z, and Z1 remained `TRIGGERED`; the user confirmed those switches were not touched and were physically released. The user also confirmed all switches are currently released.
+
+For X, Z, and Z1, the previous Klipper logic reported the released state backwards. The `endstop_pin` polarity was reversed in `config/printer.cfg` and the working phase-one config for X/PA15, Z/PA11, and Z1/PC4. Y toggled during actuation, so its original `!PA12` polarity was retained; the exact released/pressed mapping for Y still needs one deliberate check.
+
+The updated polarity has not yet been re-polled. Before homing, use `QUERY_ENDSTOPS` and verify each switch independently: released must read `open`, pressing it must read `TRIGGERED`, and releasing it must return to `open`. The Z1 input remains provisionally mapped to PC4, so verify which physical switch it represents.
 
 ## Direction checks and jogs
 
