@@ -6,8 +6,9 @@
 - Mainboard: MKS Robin Nano V1.2 / STM32F103VET6.
 - USB serial adapter: CH340, enumerated as /dev/ttyUSB0 on the test PC.
 - Klipper MCU handshake succeeded from this PC; Orange Pi 3 LTS is the planned host later.
-- Print head has been changed. There is no configured heater output, extruder, or probe.
-- The bed thermistor is configured as a read-only temperature sensor on PC0/TB. Latest reading: 19.54°C, with no heater output configured. Type follows the upstream Robin Nano config and is not yet cross-checked against stock firmware.
+- Print head has been changed. Hotend, extruder, and probe are not configured.
+- Bed thermistor PC0/TB and heater output PA0/H-BED are configured and were exercised on the printer. Staged heating to 80°C and PID calibration at 80°C succeeded. Coefficients: `Kp=64.814`, `Ki=1.583`, `Kd=663.529`. The sensor type follows the upstream Robin Nano config but is not independently cross-checked against stock firmware.
+- After `SAVE_CONFIG` restarted Klipper, the bed read 74.01°C, target 0°C, power 0; it was cooling. The latest live reading is 60.35°C, target 0°C, power 0. All axes are unhomed after the restart.
 
 ## Endstops
 
@@ -46,13 +47,28 @@ The first low-speed `G28 Z` attempt moved the whole portal in the wrong directio
 
 The second `G28 Z` completed at 1 mm/s. A follow-up `QUERY_ENDSTOPS` showed `stepper_z:TRIGGERED` and `z1:TRIGGERED`, while X/Y remained `open`. This verifies Z homing to both physical switches with the updated directions. Independent motor-only movement and gantry alignment remain unchecked. A later Klipper restart for the bed sensor reset all axes to unhomed.
 
-## Bed temperature check — read-only
+## Bed heater test and PID calibration — 2026-09-23
+
+Makerbase's Robin Nano V1.2 pinout maps bed thermistor input `TB` to MCU pin `PC0` and bed heater output `H-BED` to `PA0`. Upstream Klipper's generic Robin Nano V1.2 config uses `sensor_type: EPCOS 100K B57560G104F` on `PC0`. The stock thermistor type is not independently confirmed against Creativity's factory firmware.
+
+The configured `[heater_bed]` was tested on the printer using watermark control for staged bring-up, then Klipper's `PID_CALIBRATE HEATER=heater_bed TARGET=80`:
+
+- Initial bed reading was about 19.6°C. At a 30°C target, the heater switched and the bed warmed; watermark hysteresis and thermal inertia produced a peak of about 34.8°C.
+- At a 50°C target, the bed reached 52.8°C and the output switched off.
+- At a 65°C target, the bed reached 67.0°C and the output switched off.
+- At an 80°C target, the bed reached 82.5°C and the output switched off. Klipper remained `Ready` throughout.
+- PID auto-tuning cycled the bed between 75°C and 80°C and completed with `Kp=64.814`, `Ki=1.583`, `Kd=663.529`.
+- `SAVE_CONFIG` persisted the coefficients and restarted Klipper. The post-restart status was `Ready`, target 0°C, power 0, and the bed was cooling at 74.01°C.
+
+The heater output and temperature response were verified on this printer; the sensor curve remains an upstream-based provisional assumption. `max_temp` remains conservatively limited to 100°C. Axes are unhomed after the save/restart, and no motion was issued during this heater test.
+
+References: [Makerbase Robin Nano V1.2 pinout](https://github.com/makerbase-mks/MKS-Robin-Nano-V1.X/blob/master/hardware/MKS%20Robin%20Nano%20V1.2_003/MKS%20Robin%20Nano%20V1.2_003%20PIN.pdf), [Makerbase Robin Nano V1.2 schematic](https://github.com/makerbase-mks/MKS-Robin-Nano-V1.X/blob/master/hardware/MKS%20Robin%20Nano%20V1.2_004/MKS%20Robin%20Nano%20V1.2_004%20SCH.pdf), [Klipper generic Robin Nano config](https://github.com/Klipper3d/klipper/blob/master/config/generic-mks-robin-nano-v1.cfg), [Klipper heater bed reference](https://www.klipper3d.org/Config_Reference.html#heater_bed), [Klipper PID calibration](https://www.klipper3d.org/Config_checks.html#calibrate-pid-settings).
+
+## Initial sensor-only check — historical
 
 The user confirmed the printer and Robin Nano board are stock. Makerbase's Robin Nano V1.2 pinout maps the bed thermistor input `TB` to MCU pin `PC0` and bed heater output `H-BED` to `PA0`. Upstream Klipper's generic Robin Nano V1.2 config uses `sensor_type: EPCOS 100K B57560G104F` on `PC0`, with heater output `PA0`. The bring-up config uses only the sensor side in `[temperature_sensor bed]`; it has no `[heater_bed]` section or heater output.
 
-After `FIRMWARE_RESTART`, Klipper reported 18.39°C and then 18.49°C from the bed sensor; a later live query reported 19.54°C. No heater was configured or enabled. The values are plausible for an unheated bed but are not a calibration; the stock thermistor type has not been independently checked against Creativity's factory firmware. All axes are currently unhomed after the restart, and no motion was issued for this temperature check.
-
-References: [Makerbase Robin Nano V1.2 pinout](https://github.com/makerbase-mks/MKS-Robin-Nano-V1.X/blob/master/hardware/MKS%20Robin%20Nano%20V1.2_003/MKS%20Robin%20Nano%20V1.2_003%20PIN.pdf), [Makerbase Robin Nano V1.2 schematic](https://github.com/makerbase-mks/MKS-Robin-Nano-V1.X/blob/master/hardware/MKS%20Robin%20Nano%20V1.2_004/MKS%20Robin%20Nano%20V1.2_004%20SCH.pdf), [Klipper generic Robin Nano config](https://github.com/Klipper3d/klipper/blob/master/config/generic-mks-robin-nano-v1.cfg), [Klipper temperature_sensor reference](https://www.klipper3d.org/Config_Reference.html#temperature_sensor).
+When the sensor-only config was first enabled, Klipper reported 18.39°C, 18.49°C, and later 19.54°C. No heater was configured during that earlier check. The stock thermistor type was not independently checked against Creativity's factory firmware. No motion was issued during that initial temperature-only check.
 
 ## Earlier direction checks and jogs
 
