@@ -7,7 +7,7 @@
 - USB serial adapter: CH340, enumerated as /dev/ttyUSB0 on the test PC.
 - Klipper MCU handshake succeeded from this PC; Orange Pi 3 LTS is the planned host later.
 - Print head has been changed. There is no configured heater output, extruder, or probe.
-- The bed thermistor is configured as a read-only temperature sensor on PC0/TB. Latest unheated reading: 18.49°C. Type follows the upstream Robin Nano config and is not yet cross-checked against stock firmware.
+- The bed thermistor is configured as a read-only temperature sensor on PC0/TB. Latest reading: 19.54°C, with no heater output configured. Type follows the upstream Robin Nano config and is not yet cross-checked against stock firmware.
 
 ## Endstops
 
@@ -50,7 +50,7 @@ The second `G28 Z` completed at 1 mm/s. A follow-up `QUERY_ENDSTOPS` showed `ste
 
 The user confirmed the printer and Robin Nano board are stock. Makerbase's Robin Nano V1.2 pinout maps the bed thermistor input `TB` to MCU pin `PC0` and bed heater output `H-BED` to `PA0`. Upstream Klipper's generic Robin Nano V1.2 config uses `sensor_type: EPCOS 100K B57560G104F` on `PC0`, with heater output `PA0`. The bring-up config uses only the sensor side in `[temperature_sensor bed]`; it has no `[heater_bed]` section or heater output.
 
-After `FIRMWARE_RESTART`, Klipper reported 18.39°C and then 18.49°C from the bed sensor while no heater was configured or enabled. This is a plausible idle reading, but not a calibration; the stock thermistor type has not been independently checked against Creativity's factory firmware. All axes are currently unhomed after the restart, and no motion was issued for this temperature check.
+After `FIRMWARE_RESTART`, Klipper reported 18.39°C and then 18.49°C from the bed sensor; a later live query reported 19.54°C. No heater was configured or enabled. The values are plausible for an unheated bed but are not a calibration; the stock thermistor type has not been independently checked against Creativity's factory firmware. All axes are currently unhomed after the restart, and no motion was issued for this temperature check.
 
 References: [Makerbase Robin Nano V1.2 pinout](https://github.com/makerbase-mks/MKS-Robin-Nano-V1.X/blob/master/hardware/MKS%20Robin%20Nano%20V1.2_003/MKS%20Robin%20Nano%20V1.2_003%20PIN.pdf), [Makerbase Robin Nano V1.2 schematic](https://github.com/makerbase-mks/MKS-Robin-Nano-V1.X/blob/master/hardware/MKS%20Robin%20Nano%20V1.2_004/MKS%20Robin%20Nano%20V1.2_004%20SCH.pdf), [Klipper generic Robin Nano config](https://github.com/Klipper3d/klipper/blob/master/config/generic-mks-robin-nano-v1.cfg), [Klipper temperature_sensor reference](https://www.klipper3d.org/Config_Reference.html#temperature_sensor).
 

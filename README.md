@@ -7,7 +7,7 @@ Klipper bring-up notes and configuration for a Creativity Elf with an MKS Robin 
 - Klipper MCU firmware is installed and the host connected successfully from this Linux PC.
 - The user reports that all mechanical endstops are repaired and working. X/Y polarity and homing were checked: X homes right to 300, Y homes toward the screen/front to 0. Both reported `TRIGGERED` at the switches and returned to `open` after moving 50 mm inward.
 - Z switches were checked individually: right Z maps to PA11/`stepper_z`, left Z maps to PC4/`z1`; both switch between `open` and `TRIGGERED`. A low-speed `G28 Z` completed after reversing both Z motor directions, and both switches reported `TRIGGERED` at home. Independent motor movement and gantry alignment still need checking.
-- A read-only bed temperature sensor on PC0 reports 18.49°C while unheated. Its pin/type follow Makerbase and upstream Klipper Robin Nano references; the stock thermistor type is not independently confirmed. No heater output is configured.
+- A read-only bed temperature sensor on PC0 currently reports 19.54°C. Its pin/type follow Makerbase and upstream Klipper Robin Nano references; the stock thermistor type is not independently confirmed. No heater output is configured.
 - The print head has been changed. This phase-one config intentionally has no bed heater, hotend, extruder, or probe sections.
 - The Y− direction toward the front and X+ direction toward the right were confirmed during homing. See the status notes before continuing.
 
@@ -23,4 +23,4 @@ This is an in-progress bring-up config, not a complete print-ready printer confi
 
 ## Important
 
-All axes are currently unhomed because Klipper was restarted to add the read-only bed sensor. The unheated bed currently reads 18.49°C. A fresh Klipper host session also starts with all axes unhomed.
+All axes are currently unhomed because Klipper was restarted to add the read-only bed sensor. The bed sensor currently reads 19.54°C, with no heater output configured. A fresh Klipper host session also starts with all axes unhomed.
