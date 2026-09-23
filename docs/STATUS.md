@@ -15,7 +15,7 @@ During the initial 15-second QUERY_ENDSTOPS poll on 2026-09-22:
 - X changed between open and TRIGGERED.
 - Y remained open throughout. At the time, the user reported the wire was broken and planned to repair it; that repair is now reported complete (see the 2026-09-23 addendum).
 - Z and the configured z1 input changed between open and TRIGGERED.
-- The z1 input is assigned to PC4 provisionally; its physical identity still needs confirmation.
+- The z1 input was assigned to PC4 provisionally; its physical identity was confirmed in the 2026-09-23 Z-switch poll below.
 
 ## Addendum — 2026-09-23: repair and logical polarity
 
@@ -31,7 +31,19 @@ In a second 30-second poll, X started `open` while released and changed to `TRIG
 
 The user located the X endstop at the right side and the Y endstop by the screen/front. The config now homes X+ to max=300 and Y− to min=0. After the polarity change, released X/Y both read `open`. `G28 X Y` completed: at X=300/Y=0 both read `TRIGGERED`; after a 50 mm inward move to X=250/Y=50, both returned to `open`. The current Klipper session reports XY homed; Z remains unhomed. A new host session will start unhomed.
 
-X/Y endstop response and homing directions are verified. Z and Z1 have not been individually pressed after the polarity update; verify each with `QUERY_ENDSTOPS` before Z homing. The Z1-to-PC4 mapping remains provisional.
+X/Y endstop response and homing directions are verified. At this point, Z and Z1 had not yet been pressed after the polarity update; the later Z-switch poll below resolved their input mapping.
+
+### Right/left Z switch poll
+
+On 2026-09-23, a 45-second poll ran at 4 `QUERY_ENDSTOPS` requests per second. All four inputs began `open`. Touching the physical right Z switch changed `stepper_z`/PA11 to `TRIGGERED`; releasing it returned to `open`. Touching the physical left Z switch changed `z1`/PC4 to `TRIGGERED`; releasing it returned to `open`. A final query showed all switches `open`.
+
+The physical right/left Z endstop inputs and polarity are verified. At this point, no Z motor movement or Z homing had yet been performed.
+
+### Z direction and homing
+
+The first low-speed `G28 Z` attempt moved the whole portal in the wrong direction. The user reported this immediately; an emergency stop was sent and Klipper shut down. Both Z direction pins were then inverted (`PB4` for `stepper_z`, `PA1` for `stepper_z1`) and Klipper was restarted. All endstops read `open` before retrying.
+
+The second `G28 Z` completed at 1 mm/s. A follow-up `QUERY_ENDSTOPS` showed `stepper_z:TRIGGERED` and `z1:TRIGGERED`, while X/Y remained `open`. This verifies Z homing to both physical switches with the updated directions. Independent motor-only movement and gantry alignment remain unchecked. The latest session reports Z homed at 0; X/Y are unhomed because of the Klipper restart.
 
 ## Earlier direction checks and jogs
 

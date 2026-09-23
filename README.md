@@ -6,7 +6,7 @@ Klipper bring-up notes and configuration for a Creativity Elf with an MKS Robin 
 
 - Klipper MCU firmware is installed and the host connected successfully from this Linux PC.
 - The user reports that all mechanical endstops are repaired and working. X/Y polarity and homing were checked: X homes right to 300, Y homes toward the screen/front to 0. Both reported `TRIGGERED` at the switches and returned to `open` after moving 50 mm inward.
-- Z/Z1 polarity was adjusted so released switches should report `open`, but those inputs have not yet been pressed and checked after the change. The Z1 input mapping to PC4 is still provisional; verify Z/Z1 before Z homing.
+- Z switches were checked individually: right Z maps to PA11/`stepper_z`, left Z maps to PC4/`z1`; both switch between `open` and `TRIGGERED`. A low-speed `G28 Z` completed after reversing both Z motor directions, and both switches reported `TRIGGERED` at home. Independent motor movement and gantry alignment still need checking.
 - The print head has been changed. This phase-one config intentionally has no heater, extruder, or probe sections.
 - The Y− direction toward the front and X+ direction toward the right were confirmed during homing. See the status notes before continuing.
 
@@ -22,4 +22,4 @@ This is an in-progress bring-up config, not a complete print-ready printer confi
 
 ## Important
 
-The current Klipper session has X/Y homed and is at X=250, Y=50. Z is not homed. A fresh Klipper host session starts unhomed; recheck endstop states before homing.
+The latest Klipper session has Z homed at its endstops; X/Y are unhomed because Klipper was restarted before Z homing. A fresh Klipper host session starts with all axes unhomed; recheck endstop states before homing.
