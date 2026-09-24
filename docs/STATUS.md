@@ -6,12 +6,13 @@
 - Mainboard: MKS Robin Nano V1.2 / STM32F103VET6.
 - USB serial adapter: CH340, enumerated as /dev/ttyUSB0 on the test PC.
 - Klipper host is being tested manually on this PC through the CH340 adapter; Orange Pi 3 LTS remains the planned permanent host.
-- Print head has been changed. Hotend heater is staged on PC3 with a provisional `ATC Semitec 104GT-2` sensor curve, watermark control, 50°C ceiling, and 50% maximum power. No extruder motor or probe is configured.
+- Print head has been changed. Hotend heater is staged on PC3 with a provisional `ATC Semitec 104GT-2` sensor curve, watermark control, 50°C ceiling, and 50% maximum power. No normal `[extruder]` section or probe is configured.
 - Bed thermistor PC0/TB and heater output PA0/H-BED are configured and were exercised on the printer. Staged heating to 80°C and PID calibration at 80°C succeeded. Coefficients: `Kp=64.814`, `Ki=1.583`, `Kd=663.529`. The sensor type follows the upstream Robin Nano config but is not independently cross-checked against stock firmware.
 - A 40°C hotend target test was stopped at target. Klipper peaked near 47.7°C after heater power dropped to zero; the user measured 44°C with a thermocouple at its placement point and considered the check okay. No hotend PID tuning was run; target is now 0°C.
 - PB1 is configured neutrally as `fan_generic fan_pb1` with shutdown speed 0. Klipper accepted a 40% command for about 5 seconds and returned to 0. The user reports the part-cooling blower did not spin; the running heatsink fan is separate. The physical load on PB1 is not confirmed.
 - Makerbase's board pinout and upstream Klipper config document FAN/PB1 and HE1/PB0 as a heater output. HE1/PB0 could be repurposed only after confirming wiring and that no heater is connected. A second part-cooling channel has not been physically verified.
-- Latest observed status after the test: bed and hotend targets 0°C, heater power 0, PB1 command 0, Klipper `Ready`. All axes are unhomed.
+- The BMG feeder is temporarily configured as `[manual_stepper bmg_test]` on the Robin Nano E0 pins `PD6`, `!PD3`, and `!PB3`. The baseline is `rotation_distance: 7.71` at 16 microsteps, equivalent to about 415 steps/mm for a 1.8° motor. The user observed positive movement feeding filament out the hotend side, confirming direction toward the hotend. Actual feed length is not measured or calibrated.
+- Latest observed status after the BMG moves: bed and hotend targets 0°C, heater power 0, PB1 command 0, Klipper `Ready`. The BMG test motor was disabled. All axes are unhomed.
 
 ## Endstops
 
