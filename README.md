@@ -4,12 +4,12 @@ Klipper bring-up notes and configuration for a Creativity Elf with an MKS Robin 
 
 ## Current status
 
-- Klipper host was manually started on this Linux PC through the CH340 USB serial adapter for the sensor-only session; the Orange Pi 3 LTS is still the planned permanent host.
+- Klipper host is being tested manually on this Linux PC through the CH340 USB serial adapter; the Orange Pi 3 LTS is still the planned permanent host.
 - The user reports that all mechanical endstops are repaired and working. X/Y polarity and homing were checked: X homes right to 300, Y homes toward the screen/front to 0. Both reported `TRIGGERED` at the switches and returned to `open` after moving 50 mm inward.
 - Z switches were checked individually: right Z maps to PA11/`stepper_z`, left Z maps to PC4/`z1`; both switch between `open` and `TRIGGERED`. A low-speed `G28 Z` completed after reversing both Z motor directions, and both switches reported `TRIGGERED` at home. Independent motor movement and gantry alignment still need checking.
 - The bed thermistor on PC0/TB and heater output on PA0/H-BED were tested on the printer. The bed reached 80°C in stages and Klipper PID calibration completed at 80°C (`Kp=64.814`, `Ki=1.583`, `Kd=663.529`). The bed thermistor type follows the upstream Robin Nano config but has not been independently matched to factory firmware.
-- The changed toolhead hotend thermistor is configured read-only on PC1 using the provisional upstream `ATC Semitec 104GT-2` curve. It read 18.39–22.16°C over a 30-second room-temperature poll, so its type or connection needs checking before any hotend heating. No hotend heater or extruder is configured.
-- The heatsink fan is exposed as a manual `fan_generic` on PB1 and reports speed 0 after Klipper startup. It is not yet temperature-coupled; fan wiring and spin have not been tested.
+- The changed toolhead hotend is staged on PC3 with a 50°C limit and 50% maximum power. A 40°C target test was stopped at target; Klipper peaked near 47.7°C after power dropped to zero. The user measured 44°C with a thermocouple at its placement point and considered the check okay. Hotend PID has not been calibrated.
+- PB1 is exposed neutrally as `fan_generic fan_pb1`. A brief 40% command was accepted and returned to 0; the user reports the part-cooling blower did not spin, while the separate heatsink fan is running. Physical wiring from PB1 is unknown. The Robin Nano's HE1/PB0 is a heater output and has not been tested as a fan channel.
 - The Y− direction toward the front and X+ direction toward the right were confirmed during homing. See the status notes before continuing.
 
 This is an in-progress bring-up config, not a complete print-ready printer configuration.
@@ -22,8 +22,8 @@ This is an in-progress bring-up config, not a complete print-ready printer confi
 - docs/STATUS.md — hardware state, endstop observations, and last manual jogs.
 - docs/ADDENDUM-2026-09-23.md — repaired endstops and polarity update.
 - docs/ADDENDUM-2026-09-23-bed-heater-pid.md — staged bed heater test and PID calibration.
-- docs/ADDENDUM-2026-09-24-hotend-sensor-fan.md — read-only hotend sensor and fan startup state.
+- docs/ADDENDUM-2026-09-24-hotend-heater-fan-test.md — low-temperature hotend check and fan-channel observations.
 
 ## Important
 
-Latest live status: bed 20.79°C, target 0°C, power 0; hotend sensor 22.47°C using a provisional curve; heatsink fan speed 0. Klipper is `Ready`. All axes are unhomed after starting a fresh host session. No heater was activated during the hotend sensor setup.
+Latest observed status after the fan test: hotend and bed targets 0°C, heater power 0, PB1 command 0, Klipper `Ready`. All axes are unhomed after starting a fresh host session. A second fan channel has not been physically verified.

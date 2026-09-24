@@ -5,12 +5,13 @@
 - Printer: Creativity Elf.
 - Mainboard: MKS Robin Nano V1.2 / STM32F103VET6.
 - USB serial adapter: CH340, enumerated as /dev/ttyUSB0 on the test PC.
-- Klipper host was manually started on this PC through the CH340 adapter for the sensor-only session; Orange Pi 3 LTS remains the planned permanent host.
-- Print head has been changed. The hotend sensor is read-only; hotend heater, extruder, and probe are not configured.
+- Klipper host is being tested manually on this PC through the CH340 adapter; Orange Pi 3 LTS remains the planned permanent host.
+- Print head has been changed. Hotend heater is staged on PC3 with a provisional `ATC Semitec 104GT-2` sensor curve, watermark control, 50°C ceiling, and 50% maximum power. No extruder motor or probe is configured.
 - Bed thermistor PC0/TB and heater output PA0/H-BED are configured and were exercised on the printer. Staged heating to 80°C and PID calibration at 80°C succeeded. Coefficients: `Kp=64.814`, `Ki=1.583`, `Kd=663.529`. The sensor type follows the upstream Robin Nano config but is not independently cross-checked against stock firmware.
-- The hotend sensor is configured read-only at PC1, with a provisional `ATC Semitec 104GT-2` curve from upstream Klipper. A 30-second poll ranged 18.39–22.16°C while the bed sensor ranged 19.11–20.22°C; the hotend sensor connection/type needs checking before heat is enabled.
-- The manual heatsink fan is configured on PB1 as `fan_generic heatsink_fan`; Klipper reports speed 0 after startup. It is not automatically tied to a heater, and its electrical connection/spin has not been tested.
-- Latest live status: bed 20.79°C, target 0°C, power 0; hotend sensor 22.47°C; fan speed 0. Klipper is `Ready`. All axes are unhomed after starting a fresh host session.
+- A 40°C hotend target test was stopped at target. Klipper peaked near 47.7°C after heater power dropped to zero; the user measured 44°C with a thermocouple at its placement point and considered the check okay. No hotend PID tuning was run; target is now 0°C.
+- PB1 is configured neutrally as `fan_generic fan_pb1` with shutdown speed 0. Klipper accepted a 40% command for about 5 seconds and returned to 0. The user reports the part-cooling blower did not spin; the running heatsink fan is separate. The physical load on PB1 is not confirmed.
+- Makerbase's board pinout and upstream Klipper config document FAN/PB1 and HE1/PB0 as a heater output. HE1/PB0 could be repurposed only after confirming wiring and that no heater is connected. A second part-cooling channel has not been physically verified.
+- Latest observed status after the test: bed and hotend targets 0°C, heater power 0, PB1 command 0, Klipper `Ready`. All axes are unhomed.
 
 ## Endstops
 
