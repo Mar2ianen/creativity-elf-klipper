@@ -1,14 +1,16 @@
-# Bring-up status — updated 2026-09-23
+# Bring-up status — updated 2026-09-24
 
 ## Hardware and host
 
 - Printer: Creativity Elf.
 - Mainboard: MKS Robin Nano V1.2 / STM32F103VET6.
 - USB serial adapter: CH340, enumerated as /dev/ttyUSB0 on the test PC.
-- Klipper MCU handshake succeeded from this PC; Orange Pi 3 LTS is the planned host later.
-- Print head has been changed. Hotend, extruder, and probe are not configured.
+- Klipper host was manually started on this PC through the CH340 adapter for the sensor-only session; Orange Pi 3 LTS remains the planned permanent host.
+- Print head has been changed. The hotend sensor is read-only; hotend heater, extruder, and probe are not configured.
 - Bed thermistor PC0/TB and heater output PA0/H-BED are configured and were exercised on the printer. Staged heating to 80°C and PID calibration at 80°C succeeded. Coefficients: `Kp=64.814`, `Ki=1.583`, `Kd=663.529`. The sensor type follows the upstream Robin Nano config but is not independently cross-checked against stock firmware.
-- After `SAVE_CONFIG` restarted Klipper, the bed read 74.01°C, target 0°C, power 0; it was cooling. The latest live reading is 60.35°C, target 0°C, power 0. All axes are unhomed after the restart.
+- The hotend sensor is configured read-only at PC1, with a provisional `ATC Semitec 104GT-2` curve from upstream Klipper. A 30-second poll ranged 18.39–22.16°C while the bed sensor ranged 19.11–20.22°C; the hotend sensor connection/type needs checking before heat is enabled.
+- The manual heatsink fan is configured on PB1 as `fan_generic heatsink_fan`; Klipper reports speed 0 after startup. It is not automatically tied to a heater, and its electrical connection/spin has not been tested.
+- Latest live status: bed 20.79°C, target 0°C, power 0; hotend sensor 22.47°C; fan speed 0. Klipper is `Ready`. All axes are unhomed after starting a fresh host session.
 
 ## Endstops
 
